@@ -1,0 +1,25 @@
+-{ block:
+
+    local function builder (x)
+        local str, args, block = unpack(x)
+        local run = `Function{{`Id"self", unpack(args)}, block}
+        local fun = +{function(self, x) self:_run(string.gmatch(x, self.patten)()); end}
+        return +{stat: When={patten=-{str}, _run=-{run}, fun=-{fun}}}
+    end
+
+    mlp.lexer:add{"given", "when", "|"}
+
+    mlp.stat:add{ name = 'when statement',
+        'when',
+        mlp.string, 'do', '|', mlp.func_params_content, '|', mlp.block, 'end',
+        builder = builder }
+}
+
+when "input(%d+),(%d+),(%d+)"  do |x, y, z|
+    print(x, y, z)
+end
+
+--~ main run
+When:fun("input2,5,14")
+
+

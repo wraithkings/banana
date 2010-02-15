@@ -1,0 +1,28 @@
+-{ block:
+
+    local function builder (x)
+        local str, args, block = unpack(x)
+        local run = `Function{{`Id"self", unpack(args)}, block}
+        local fun = +{function(self, x) self:_run(string.gmatch(x, self.patten)()); end}
+        return +{stat: _When={patten=-{str}, _run=-{run}, fun=-{fun}}}
+    end
+
+    local function then_builder (x)
+        local str, args, block = unpack(x)
+        local run = `Function{{`Id"self", unpack(args)}, block}
+        local fun = +{function(self, x) self:_run(string.gmatch(x, self.patten)()); end}
+        return +{stat: _Then={patten=-{str}, _run=-{run}, fun=-{fun}}}
+    end
+
+    mlp.lexer:add{"Given", "When","Then", "|"}
+
+    mlp.stat:add{ name = 'when statement',
+        'When',
+        mlp.string, 'do', '|', mlp.func_params_content, '|', mlp.block, 'end',
+        builder = builder }
+    mlp.stat:add { name = 'then statement',
+        'Then',
+        mlp.string, 'do', '|', mlp.func_params_content, '|', mlp.block, 'end',
+        builder = then_builder
+    }
+}
